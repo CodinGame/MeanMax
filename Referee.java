@@ -1464,7 +1464,7 @@ class Referee extends MultiReferee {
             Player survivor = alive.get(0);
 
             // If only one player is alive and he got the highest score, end the game now.
-            return players.stream().filter(p -> p != alive).allMatch(p -> p.score < survivor.score);
+            return players.stream().filter(p -> p != survivor).allMatch(p -> p.score < survivor.score);
         }
 
         // Everyone is dead. End of the game.
