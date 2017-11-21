@@ -14,6 +14,8 @@ class Referee extends MultiReferee {
     static boolean REAPER_SKILL_ACTIVE = true;
     static boolean DESTROYER_SKILL_ACTIVE = true;
     static boolean DOOF_SKILL_ACTIVE = true;
+    static String EXPECTED = "<x> <y> <power> | SKILL <x> <y> | WAIT";
+    
 
     static {
         switch (GAME_VERSION) {
@@ -23,12 +25,14 @@ class Referee extends MultiReferee {
             REAPER_SKILL_ACTIVE = false;
             DESTROYER_SKILL_ACTIVE = false;
             DOOF_SKILL_ACTIVE = false;
+            EXPECTED = "<x> <y> <power> | WAIT";
             break;
         case 1:
             LOOTER_COUNT = 2;
             REAPER_SKILL_ACTIVE = false;
             DESTROYER_SKILL_ACTIVE = false;
             DOOF_SKILL_ACTIVE = false;
+            EXPECTED = "<x> <y> <power> | WAIT";
             break;
         case 2:
             LOOTER_COUNT = 3;
@@ -1183,7 +1187,7 @@ class Referee extends MultiReferee {
             throws WinException, LostException, InvalidInputException {
 
         Player player = players.get(playerIdx);
-        String expected = "<x> <y> <power> | SKILL <x> <y> | WAIT";
+        String expected = EXPECTED;
 
         for (int i = 0; i < LOOTER_COUNT; ++i) {
             String line = outputs[i];
@@ -1252,6 +1256,11 @@ class Referee extends MultiReferee {
         }
     }
 
+    @Override
+    protected int getMillisTimeForRound() {
+        return 50;
+    }
+    
     private void matchMessage(Looter looter, Matcher match) {
         looter.message = match.group("message");
         if (looter.message != null && looter.message.length() > 19) {
@@ -1538,7 +1547,29 @@ class Referee extends MultiReferee {
     @Override
     protected String[] getGameSummary(int round) {
         List<String> lines = new ArrayList<>();
-       
+        /*
+        for (Looter looter : looters) {
+            if (looter.attempt == Action.MOVE && looter.wantedThrustPower > 0) {
+                lines.add(translate("Move", looter.player.index, looter.id, Math.round(looter.wantedThrustTarget.x),
+                        Math.round(looter.wantedThrustTarget.y),
+                        looter.wantedThrustPower));
+            } else if (looter.attempt == Action.SKILL) {
+                if (looter.skillResult.code == SkillResult.TOO_FAR) {
+                    lines.add(translate("SkillFailedTooFar", looter.player.index, looter.id, looter.skillResult.getX(), looter.skillResult.getY()));
+                } else if (looter.skillResult.code == SkillResult.NO_RAGE) {
+                    lines.add(translate("SkillFailedNoRage", looter.player.index, looter.id, looter.skillCost, looter.player.rage));
+                } else {
+                    if (looter.type == LOOTER_DESTROYER) {
+                        lines.add(translate("SkillDestroyer", looter.player.index, looter.id, looter.skillResult.getX(), looter.skillResult.getY()));
+                    } else if (looter.type == LOOTER_REAPER) {
+                        lines.add(translate("SkillRepear", looter.player.index, looter.id, looter.skillResult.getX(), looter.skillResult.getY()));
+                    } else if (looter.type == LOOTER_DOOF) {
+                        lines.add(translate("SkillDoof", looter.player.index, looter.id, looter.skillResult.getX(), looter.skillResult.getY()));
+                    }
+                }
+            }
+        }
+        */
         return lines.toArray(new String[lines.size()]);
     }
 
